@@ -16,3 +16,13 @@
     display: inline-block;
     vertical-align: middle;
 }
+
+.icon-span {
+    display: inline-block;
+    margin-right: 10px;
+    font-size: 20px;
+    cursor: pointer;
+    color: rgb(119, 116, 138);
+    transition: all .2s;
+}
+

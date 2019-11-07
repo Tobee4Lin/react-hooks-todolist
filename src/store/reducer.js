@@ -30,7 +30,7 @@ export const todoReducer = (state, action) => {
     case "addTodoItem": {
       let newState = JSON.parse(JSON.stringify(state));
       if(state.currentInfo) {
-        newState.list.push({ desc: state.currentInfo, author: state.currentAuthor });
+        newState.list.push({ desc: state.currentInfo, author: state.currentAuthor, isDone: false });
       }
       return newState
     }
@@ -39,6 +39,13 @@ export const todoReducer = (state, action) => {
       const { index } = action
       let newState = JSON.parse(JSON.stringify(state));
       newState.list.splice(index, 1)
+      return newState
+    }
+
+    case "editTodoItem": {
+      const { index } = action
+      let newState = JSON.parse(JSON.stringify(state));
+      newState.list[index].desc = state.currentInfo
       return newState
     }
 

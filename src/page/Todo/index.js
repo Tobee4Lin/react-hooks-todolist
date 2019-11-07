@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useReducer } from 'react';
 
-import { Button, Input, List, Icon, Avatar, Spin, notification } from 'antd'
+import { Button, Input, List, Icon, Avatar, Spin, notification, Modal } from 'antd'
 
 import { initCountState, initTodoState } from '../../store/index'
 import { countReducer, todoReducer } from '../../store/reducer'
@@ -12,6 +12,9 @@ const TodoApp = () => {
   const [todoState, todoDispatch] = useReducer(todoReducer, initTodoState);
 
   const [isLoading, setIsLoading] = useState(false);
+  const [modal2Visible, setModal2Visible] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isCheck, setIsCheck] = useState(false);
 
   const openNotification = () => {
     notification.open({
@@ -27,7 +30,7 @@ const TodoApp = () => {
     setTimeout(() => {
       todoDispatch({ type: "addTodoItem" })
       setIsLoading(false)
-    }, 1000);
+    }, 500);
   }
 
   const deleteTodoItem = (index) => {
@@ -35,9 +38,27 @@ const TodoApp = () => {
   }
 
   const editTodoItem = (index) => {
-
+    setCurrentIndex(index)
+    setModal2Visible(true);
   }
 
+  const confirmEditTodoItem = () => {
+    setIsLoading(true)
+    setTimeout(() => {
+      todoDispatch({ type: "editTodoItem", index: currentIndex })
+      setModal2Visible(false)
+      setIsLoading(false)
+    }, 500);
+  }
+
+  const cancelEditTodoItem = () => {
+    todoDispatch({ type: "changeTodoItem", payload: "" })
+    setModal2Visible(false)
+  }
+
+  const changeCheckStatus = (status) => {
+    setIsCheck(status)
+  }
 
   /**
    * 页面开始加载时会执行，同时依赖项变化时也会执行
@@ -54,30 +75,43 @@ const TodoApp = () => {
       <hr />
       <div>This is a Todo App.</div>
       <div className="todo-wrap">
-        <div className="inline_block_div" style={{width: '80%', marginRight: '20px'}}>
+        <div className="inline_block_div" style={{ width: '80%', marginRight: '20px' }}>
           <Input placeholder="input todo item" onChange={(e) => todoDispatch({ type: "changeTodoItem", payload: e.target.value })} />
         </div>
         <div className="inline_block_div">
           <Button type="primary" onClick={addTodoItem}> add </Button>
         </div>
-        <div style={{textAlign: 'left'}}>
+        <div style={{ textAlign: 'left' }}>
           <List
             itemLayout="horizontal"
             dataSource={todoState.list}
             renderItem={(item, index) => (
               <List.Item>
+                <span className="icon-span" onMouseEnter={() => changeCheckStatus(true)} onMouseLeave={() => changeCheckStatus(false)}>
+                  <Icon type={item.isDone ? "check-circle" : "close-circle"} />
+                </span>
                 <List.Item.Meta
                   avatar={<Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />}
-                  title={<a href="#">{item.author}</a>}
+                  title={<a href="https://github.com/Tobee4Lin/react-hooks-todolist">{item.author}</a>}
                   description={item.desc}
                 />
-                <Button type="default" size="small" onClick={() => editTodoItem(index)} style={{marginRight: '10px'}}><Icon type="edit"></Icon></Button>
+                <Button type="default" size="small" onClick={() => editTodoItem(index)} style={{ marginRight: '10px' }}><Icon type="edit"></Icon></Button>
                 <Button type="danger" size="small" onClick={() => deleteTodoItem(index)}><Icon type="delete"></Icon></Button>
               </List.Item>
             )}
           />
         </div>
       </div>
+
+      <Modal
+        title="edit todo item"
+        centered
+        visible={modal2Visible}
+        onOk={confirmEditTodoItem}
+        onCancel={cancelEditTodoItem}
+      >
+        <Input placeholder={todoState.list[currentIndex].desc} onChange={(e) => todoDispatch({ type: "changeTodoItem", payload: e.target.value })} />
+      </Modal>
     </Spin>
   )
 }
