@@ -22,7 +22,48 @@
     margin-right: 10px;
     font-size: 20px;
     cursor: pointer;
-    color: rgb(119, 116, 138);
+    color: #ee4141;
     transition: all .2s;
+}
+
+.icon-span-checked {
+    color: #108ee9;
+}
+
+.icon-span-unchecked {
+    color: #ee4141;
+}
+
+.tags-wrapper {
+    width: 50%;
+    margin: 30px auto 0;
+}
+.default-tag {
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 15px;
+    padding: 5px 10px;
+    text-align: center;
+    color: #666;
+    border: 1px solid #999;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all .2s;
+}
+
+.default-tag:hover {
+    border: 1px solid #108ee9;
+    color: #108ee9;
+    box-shadow: 0 0 3px #108ee9;
+}
+
+.tag-selected {
+    background-color: #108ee9;
+    color: #fff;
+}
+
+.tag-selected:hover {
+    border: 1px solid #108ee9;
+    color: #fff;
 }
 

@@ -1,5 +1,5 @@
 export const initCountState = {
-  count: 0
+  count: 629
 }
 
 export const initTodoState = {
@@ -9,7 +9,7 @@ export const initTodoState = {
     {
       author: 'Tobee',
       desc: 'first info, do it first !!',
-      isDone: true
+      isDone: false
     },
     {
       author: 'Mike',
@@ -19,7 +19,7 @@ export const initTodoState = {
     {
       author: 'Rose',
       desc: 'third info',
-      isDone: false
+      isDone: true
     }
   ]
 }

@@ -14,14 +14,17 @@ const TodoApp = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [modal2Visible, setModal2Visible] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isCheck, setIsCheck] = useState(false);
+  const [currentSelected, setCurrentSelected] = useState('all');
+  const [todosList, setTodosList] = useState(todoState.list)
+
+  // let todosList = todoState.list
 
   const openNotification = () => {
     notification.open({
       message: 'Notification about count',
       description: `The current count is ${countState.count}`,
       icon: <Icon type="smile" style={{ color: '#108ee9' }} />,
-      duration: 3,
+      duration: 3
     });
   };
 
@@ -48,6 +51,7 @@ const TodoApp = () => {
       todoDispatch({ type: "editTodoItem", index: currentIndex })
       setModal2Visible(false)
       setIsLoading(false)
+      setCurrentIndex(0)
     }, 500);
   }
 
@@ -56,8 +60,52 @@ const TodoApp = () => {
     setModal2Visible(false)
   }
 
-  const changeCheckStatus = (status) => {
-    setIsCheck(status)
+  const changeCheckStatus = (index) => {
+    todosList[index].isDone = !todosList[index].isDone
+    let _todolist = JSON.parse(JSON.stringify(todosList))
+    todoDispatch({ type: "changeTodoItemStatus", payload: _todolist })
+  }
+
+  const changeStatus = (index) => {
+    todosList[index].isDone = !todosList[index].isDone
+    let _todolist = JSON.parse(JSON.stringify(todosList))
+    todoDispatch({ type: "changeTodoItemStatus", payload: _todolist })
+    // // console.log(todosList[index].isDone)
+    // if(todosList[index].isDone) {
+    //   let _theLastItem = _todolist.splice(index, 1)[0]
+    //   console.log(_theLastItem, '_th')
+    //   _todolist.push(_theLastItem);
+    // } else {
+
+    // }
+    // todoDispatch({ type: "changeTodoItemStatus", payload: _todolist })
+    // console.log(todosList, '_th')
+    notification.open({
+      message: 'change Todo item status success',
+      icon: <Icon type="smile" style={{ color: '#108ee9' }} />,
+      duration: 3
+    });
+  }
+
+  const keepAll = () => {
+    setTodosList(todoState.list)
+    setCurrentSelected('all')
+  }
+
+  const keepActive = () => {
+    let _t = todoState.list.filter(item => {
+      return item.isDone == false
+    })
+    setTodosList(_t)
+    setCurrentSelected('active')
+  }
+
+  const keepCompleted = () => {
+    let _t = todoState.list.filter(item => {
+      return item.isDone == true
+    })
+    setTodosList(_t)
+    setCurrentSelected('completed')
   }
 
   /**
@@ -66,6 +114,10 @@ const TodoApp = () => {
   useEffect(() => {
     openNotification()
   }, [countState.count])
+
+  useEffect(() => {
+    setTodosList(todoState.list)
+  }, [todoState.list])
 
   return (
     <Spin spinning={isLoading}>
@@ -84,10 +136,14 @@ const TodoApp = () => {
         <div style={{ textAlign: 'left' }}>
           <List
             itemLayout="horizontal"
-            dataSource={todoState.list}
+            dataSource={todosList}
             renderItem={(item, index) => (
               <List.Item>
-                <span className="icon-span" onMouseEnter={() => changeCheckStatus(true)} onMouseLeave={() => changeCheckStatus(false)}>
+                <span className={["icon-span", item.isDone ? "icon-span-checked" : "icon-span-unchecked"].join(" ")}
+                  onMouseEnter={() => changeCheckStatus(index)}
+                  onMouseLeave={() => changeCheckStatus(index)}
+                  onClick={() => changeStatus(index)}
+                >
                   <Icon type={item.isDone ? "check-circle" : "close-circle"} />
                 </span>
                 <List.Item.Meta
@@ -101,6 +157,11 @@ const TodoApp = () => {
             )}
           />
         </div>
+        <div className="tags-wrapper">
+          <div className={['default-tag', currentSelected == 'all' ? 'tag-selected' : ''].join(" ")} onClick={keepAll}> All </div>
+          <div className={['default-tag', currentSelected == 'active' ? 'tag-selected' : ''].join(" ")} onClick={keepActive}> Active </div>
+          <div className={['default-tag', currentSelected == 'completed' ? 'tag-selected' : ''].join(" ")} onClick={keepCompleted}> Completed </div>
+        </div>
       </div>
 
       <Modal
@@ -110,7 +171,7 @@ const TodoApp = () => {
         onOk={confirmEditTodoItem}
         onCancel={cancelEditTodoItem}
       >
-        <Input placeholder={todoState.list[currentIndex].desc} onChange={(e) => todoDispatch({ type: "changeTodoItem", payload: e.target.value })} />
+        <Input placeholder={todosList[currentIndex].desc} onChange={(e) => todoDispatch({ type: "changeTodoItem", payload: e.target.value })} />
       </Modal>
     </Spin>
   )

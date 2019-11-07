@@ -46,6 +46,14 @@ export const todoReducer = (state, action) => {
       const { index } = action
       let newState = JSON.parse(JSON.stringify(state));
       newState.list[index].desc = state.currentInfo
+      console.log(newState)
+      return newState
+    }
+
+    case "changeTodoItemStatus": {
+      const { payload } = action
+      let newState = JSON.parse(JSON.stringify(state));
+      newState.list = JSON.parse(JSON.stringify(payload))
       return newState
     }
 
